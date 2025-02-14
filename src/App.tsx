@@ -1,6 +1,7 @@
 import { Authenticated, GitHubBanner, Refine } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
+import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 
 import {
   ErrorComponent,
@@ -25,27 +26,25 @@ import { ColorModeContextProvider } from "./contexts/color-mode";
 import {
   BlogPostCreate,
   BlogPostEdit,
-  BlogPostList,
   BlogPostShow,
-} from "./pages/blog-posts";
-import {
-  CategoryCreate,
-  CategoryEdit,
-  CategoryList,
-  CategoryShow,
-} from "./pages/categories";
+  HomeList,
+} from "./pages/home";
+
 import { ForgotPassword } from "./pages/forgotPassword";
 import { Login } from "./pages/login";
 import { Register } from "./pages/register";
+import { AdminPanelSettings, AdminPanelSettingsOutlined, AdminPanelSettingsRounded, AdminPanelSettingsSharp, BusAlertOutlined, CircleNotifications, DriveEta, FindInPage, FindReplace, Home, LineAxisOutlined, RemoveCircle, SetMeal, Terminal, TerminalTwoTone, VerifiedUserOutlined } from "@mui/icons-material";
+import { ApartmentOutlined, UsergroupDeleteOutlined, UserOutlined } from "@ant-design/icons";
+import { Bus } from "./pages/administration/bus/list";
+import { Lines } from "./pages/administration/route/list";
 
 function App() {
   return (
     <BrowserRouter>
-      <GitHubBanner />
       <RefineKbarProvider>
         <ColorModeContextProvider>
           <AntdApp>
-            <DevtoolsProvider>
+            
               <Refine
                 dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
                 notificationProvider={useNotificationProvider}
@@ -53,27 +52,65 @@ function App() {
                 authProvider={authProvider}
                 resources={[
                   {
-                    name: "blog_posts",
-                    list: "/blog-posts",
-                    create: "/blog-posts/create",
-                    edit: "/blog-posts/edit/:id",
-                    show: "/blog-posts/show/:id",
+                    name: "home",
+                    list: "/home",
+                    create: "/home/create",
+                    edit: "/home/edit/:id",
+                    show: "/home/show/:id",
                     meta: {
                       canDelete: true,
+                      label: 'Home'
                     },
+                    icon: <Home />
                   },
                   {
-                    name: "categories",
-                    list: "/categories",
-                    create: "/categories/create",
-                    edit: "/categories/edit/:id",
-                    show: "/categories/show/:id",
+                    name: "administrations",
+                    list: "adm",
+                    show: "adm",
                     meta: {
-                      canDelete: true,
-                    },
+                      label: 'Administração',
+                      icon: <ApartmentOutlined/>
+                    } 
                   },
+                  {
+                    name: "administrations",
+                    list: "/adm/bus",
+                    meta: {
+                      parent: 'administrations',
+                      label: 'Onibus',
+                      icon: <BusAlertOutlined/>
+                    }
+                  },
+                  {
+                    name: "lines",
+                    list: "/adm/lines",
+                    meta: {
+                      parent: 'administrations',
+                      label: 'Linhas',
+                      icon: <LineAxisOutlined/>
+                    }
+                  },
+                  {
+                    name: "terminals",
+                    list: "/adm/terminals",
+                    meta: {
+                      parent: 'administrations',
+                      label: 'Terminais',
+                      icon: <SetMeal/>
+                    }
+                  },
+                  {
+                    name: "drivers",
+                    list: "/adm/drivers",
+                    meta: {
+                      parent: 'administrations',
+                      label: 'Motoristas',
+                      icon: <UsergroupDeleteOutlined/>
+                    }
+                  }
                 ]}
                 options={{
+                  title: {text: 'Alió', icon: <DirectionsBusIcon/>},
                   syncWithLocation: true,
                   warnWhenUnsavedChanges: true,
                   useNewQueryKeys: true,
@@ -98,20 +135,25 @@ function App() {
                   >
                     <Route
                       index
-                      element={<NavigateToResource resource="blog_posts" />}
+                      element={<NavigateToResource resource="home" />}
                     />
-                    <Route path="/blog-posts">
-                      <Route index element={<BlogPostList />} />
+                    <Route path="/home">
+                      <Route index element={<HomeList />} />
                       <Route path="create" element={<BlogPostCreate />} />
                       <Route path="edit/:id" element={<BlogPostEdit />} />
                       <Route path="show/:id" element={<BlogPostShow />} />
                     </Route>
-                    <Route path="/categories">
-                      <Route index element={<CategoryList />} />
-                      <Route path="create" element={<CategoryCreate />} />
-                      <Route path="edit/:id" element={<CategoryEdit />} />
-                      <Route path="show/:id" element={<CategoryShow />} />
+                    
+                    {/* Rota de cadastro e listagem de onibus */}
+                    <Route path="/adm/bus">
+                      <Route index element={<Bus />}/>
                     </Route>
+
+                    {/* Linhas, cadastros e listagem */}
+                    <Route path="/adm/lines">
+                      <Route index element={<Lines />}/>
+                    </Route>
+
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>
                   <Route
@@ -137,8 +179,6 @@ function App() {
                 <UnsavedChangesNotifier />
                 <DocumentTitleHandler />
               </Refine>
-              <DevtoolsPanel />
-            </DevtoolsProvider>
           </AntdApp>
         </ColorModeContextProvider>
       </RefineKbarProvider>
