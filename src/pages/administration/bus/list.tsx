@@ -1,13 +1,14 @@
+//@ts-ignore
 import { useState } from "react";
 import { Form, Input, Button, Table, Modal } from "antd";
 
 export const Bus = () => {
-  const [buses, setBuses] = useState([]);
+  const [buses, setBuses] = useState<any>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [form] = Form.useForm();
 
-  const handleSubmit = (values) => {
+  const handleSubmit = (values: any) => {
     setBuses([...buses, { ...values, key: buses.length }]);
     form.resetFields();
     setIsModalOpen(false);

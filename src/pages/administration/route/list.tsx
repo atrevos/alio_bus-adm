@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+//@ts-ignore
+import { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Polyline, Marker, useMapEvents, Tooltip } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -20,22 +21,41 @@ import {
 } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
+
+
 const { Option } = Select;
 const { Text } = Typography;
 const { Panel } = Collapse;
 
+interface Step {
+  step: String;
+  name?: string;
+  maneuver?: { location: [number, number] };
+  geometry?: { coordinates: [number, number][] };
+  distance?: number;
+  duration?: number;
+}
+
+interface Leg {
+  steps: Step[]
+}
+
+const legs: Leg[] = []
+
+
+
 // Corrigir ícones padrão do Leaflet
-delete L.Icon.Default.prototype._getIconUrl;
+
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
   iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-const ClickHandler = ({ setPoints }) => {
+const ClickHandler = ({ setPoints }: any) => {
   useMapEvents({
-    click(e) {
-      setPoints((prev) => [...prev, e.latlng]);
+    click(e: any) {
+      setPoints((prev: any) => [...prev, e.latlng]);
     },
   });
   return null;
@@ -43,8 +63,8 @@ const ClickHandler = ({ setPoints }) => {
 
 export const Lines = () => {
   const [points, setPoints] = useState([]);
-  const [addresses, setAddresses] = useState([]);
-  const [route, setRoute] = useState([]);
+  const [addresses, setAddresses] = useState<any>([]);
+  const [route, setRoute] = useState<any>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -53,6 +73,9 @@ export const Lines = () => {
   const [legs, setLegs] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [form] = Form.useForm();
+  const mapRef = useRef<Map<any, any> | null>(null);
+
+
 
   const NOMINATIM_SERVERS = [
     "https://nominatim.openstreetmap.org",
@@ -60,7 +83,7 @@ export const Lines = () => {
     "https://nominatim.openstreetmap.fr",
   ];
 
-  const fetchAddressForPoint = async (lat, lng) => {
+  const fetchAddressForPoint = async (lat: number, lng: number) => {
     for (const server of NOMINATIM_SERVERS) {
       const url = `${server}/reverse?format=json&lat=${lat}&lon=${lng}`;
       try {
@@ -78,10 +101,10 @@ export const Lines = () => {
     return "Erro ao buscar endereço";
   };
 
-  const fetchAddresses = async (points) => {
+  const fetchAddresses = async (points: any) => {
     setLoading(true);
     const newAddresses = await Promise.all(
-      points.map(async (point) => fetchAddressForPoint(point.lat, point.lng))
+      points.map(async (point: any) => fetchAddressForPoint(point.lat, point.lng))
     );
     setAddresses(newAddresses);
     setLoading(false);
@@ -104,7 +127,7 @@ export const Lines = () => {
         const data = await response.json();
         if (data.routes?.[0]) {
           const routeData = data.routes[0];
-          setRoute(routeData.geometry.coordinates.map(([lng, lat]) => [lat, lng]));
+          setRoute(routeData.geometry.coordinates.map(([lng, lat]: [number, number]) => [lat, lng]));
           setDistance(routeData.distance);
           setDuration(routeData.duration);
           setLegs(routeData.legs?.length > 0 ? routeData.legs : data.waypoints);
@@ -117,13 +140,13 @@ export const Lines = () => {
     fetchRoute();
   }, [points]);
 
-  const formatDuration = (seconds) => {
+  const formatDuration = (seconds: any) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     return `${hours}h${minutes.toString().padStart(2, '0')}m`;
   };
 
-  const formatDurationFull = (seconds) => {
+  const formatDurationFull = (seconds: any) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     return `${hours}h${minutes.toString().padStart(2, '0')}min`;
@@ -366,7 +389,7 @@ export const Lines = () => {
         <Button onClick={() => setDrawerVisible(true)}>🔽 Mostrar Endereços</Button>
       </div>
 
-      <MapContainer center={[-5.09408, -42.83625]} zoom={13} style={{ height: "70vh", width: "100%" }}>
+      <MapContainer center={[-5.09408, -42.83625]} zoom={13} style={{ height: "70vh", width: "100%" }} whenReady={(map) => (mapRef.current = map)}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -415,7 +438,7 @@ export const Lines = () => {
         ) : (
           <div>
             <div><strong>Origem:</strong> {addresses[0]}</div>
-            {addresses.slice(1, -1).map((address, index) => (
+            {addresses.slice(1, -1).map((address: any, index: any) => (
               <div key={index}><strong>Parada {index + 1}:</strong> {address}</div>
             ))}
             <div><strong>Destino:</strong> {addresses[addresses.length - 1]}</div>
@@ -438,7 +461,7 @@ export const Lines = () => {
             <div>
               <Text strong>Total:</Text>
               <Text style={{ marginLeft: 8 }}>
-                {(distance / 1000).toFixed(2)} km
+              {(distance ? (distance / 1000).toFixed(2) : "N/A")} km
               </Text>
               <Text style={{ marginLeft: 16 }}>
                 {formatDurationFull(duration)}
