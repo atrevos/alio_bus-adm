@@ -44,13 +44,29 @@ const legs: Leg[] = []
 
 
 
-// Corrigir ícones padrão do Leaflet
-
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+// Ícone de saída (azul)
+const startIcon = L.icon({
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  shadowSize: [41, 41],
 });
+
+// Ícone de chegada (vermelho)
+const endIcon = L.icon({
+  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  shadowSize: [41, 41],
+});
+
+
+
+
 
 const ClickHandler = ({ setPoints }: any) => {
   useMapEvents({
@@ -396,24 +412,18 @@ export const Lines = () => {
         />
         <ClickHandler setPoints={setPoints} />
 
-        {points.map((point, index) => (
-          <Marker
-            key={index}
-            position={point}
-            draggable={isEditing}
-            eventHandlers={{
-              dragend: (e) => {
-                const newPoints = [...points];
-                newPoints[index] = e.target.getLatLng();
-                setPoints(newPoints);
-              },
-            }}
-          >
-            <Tooltip direction="top" offset={[0, -10]} opacity={1}>
-              {index === 0 ? "📍 Origem" : index === points.length - 1 ? "🏁 Destino" : `🚏 Parada ${index}`}
-            </Tooltip>
-          </Marker>
-        ))}
+        {points.length > 0 && (
+  <Marker position={points[0]} icon={startIcon}>
+    <Tooltip>Ponto de Partida</Tooltip>
+  </Marker>
+)}
+
+{points.length > 1 && (
+  <Marker position={points[points.length - 1]} icon={endIcon}>
+    <Tooltip>Destino Final</Tooltip>
+  </Marker>
+)}
+
 
         {route.length > 0 && <Polyline positions={route} color="blue" />}
       </MapContainer>
