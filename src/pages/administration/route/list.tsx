@@ -20,6 +20,7 @@ import {
   Collapse
 } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Show } from "@refinedev/antd";
 
 
 
@@ -390,8 +391,16 @@ export const Lines = () => {
   );
 
   return (
+    <Show>
+
     <div>
-      <div style={{ marginBottom: 10, display: "flex", gap: "10px" }}>
+      <div   style={{
+    marginBottom: 10,
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "10px",
+    justifyContent: "center",
+  }}>
         <Button onClick={() => { setPoints([]); setRoute([]); setAddresses([]); }}>🗑️ Resetar Rota</Button>
         <Button onClick={() => setIsEditing(!isEditing)}>
           {isEditing ? "🔒 Finalizar Edição" : "✏️ Editar Trajeto"}
@@ -491,5 +500,6 @@ export const Lines = () => {
         {modalContent}
       </Modal>
     </div>
+    </Show>
   );
 };
