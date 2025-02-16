@@ -136,39 +136,40 @@ export const HomeList = () => {
             <Map />
           </Card>
         </Col>
-        <Col span={8}>
-          <Card title="Status da Frota">
-            <Progress
-              percent={(buses.filter((bus) => bus.status === "Em Rota").length / buses.length) * 100}
-            />
-            <Typography.Text>
-              Ônibus em rota: {buses.filter((bus) => bus.status === "Em Rota").length}
-            </Typography.Text>
-            <br />
-            <Typography.Text>
-              Ônibus na garagem: {buses.filter((bus) => bus.status === "Na Garagem").length}
-            </Typography.Text>
-            <br />
-            <Typography.Text>
-              Ônibus no terminal: {buses.filter((bus) => bus.status === "No Terminal").length}
-            </Typography.Text>
-          </Card>
 
-          <Card title="Horários e Rotas dos Ônibus" style={{ marginTop: 16 }}>
-            <List
-              dataSource={buses.map((bus) => ({
-                route: bus.name,
-                time: "10:00 AM - 10:30 AM",
-              }))}
-              renderItem={(bus) => (
-                <List.Item>
-                  <Typography.Text strong>{bus.route}</Typography.Text> -{" "}
-                  <Typography.Text>{bus.time}</Typography.Text>
-                </List.Item>
-              )}
-            />
-          </Card>
-        </Col>
+        <Col xs={24} sm={12} md={8}>
+    <Card title="Status da Frota">
+      <Progress percent={30} />
+      <Typography.Text>
+        Ônibus em rota: {buses.filter((bus) => bus.status === "Em Rota").length}
+      </Typography.Text>
+      <br />
+      <Typography.Text>
+        Ônibus na garagem: {buses.filter((bus) => bus.status === "Na Garagem").length}
+      </Typography.Text>
+      <br />
+      <Typography.Text>
+        Ônibus no terminal: {buses.filter((bus) => bus.status === "No Terminal").length}
+      </Typography.Text>
+    </Card>
+  </Col>
+
+  <Col xs={24} sm={12} md={8}>
+    <Card title="Horários e Rotas dos Ônibus">
+      <List
+        dataSource={buses.map((bus) => ({
+          route: bus.name,
+          time: "10:00 AM - 10:30 AM",
+        }))}
+        renderItem={(bus) => (
+          <List.Item>
+            <Typography.Text strong>{bus.route}</Typography.Text> -{" "}
+            <Typography.Text>{bus.time}</Typography.Text>
+          </List.Item>
+        )}
+      />
+    </Card>
+  </Col>
       </Row>
 
       {/* Estilos globais */}
